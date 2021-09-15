@@ -30,7 +30,48 @@ let parselength =
 
 let parsenotsharpablenote = anyOf "be" |>>(function
  | 'b' -> B
- | 'e' -> E)
- | unknown -> sprintf "Unknown note %c" unknown |> failwith
+ | 'e' -> E
+ | unknown -> sprintf "Unknown note %c" unknown |> failwith)
 
-TST parselength aspriation
+let parsesharp = (stringReturn "#" true) <|> (stringReturn "" false)
+
+let parsesharpnote = 
+ pipe2
+  parsesharp
+  (anyOf "acdfg")
+  (fun isSharp note ->
+     match (isSharp,note) with
+        (false, 'a') -> A
+      | (true, 'a') -> ASharp
+      | (false, 'c') -> C
+      | (true, 'c') -> CSharp
+      | (false, 'd') -> D
+      | (true, 'd') -> DSharp
+      | (false, 'f') -> F
+      | (true, 'f') -> FSharp
+      | (false, 'g') -> G
+      | (true, 'g') -> GSharp
+      | (_,unknown) -> sprintf "Unknown note %c" unknown |> failwith
+      )
+let parsenote = parsenotsharpablenote <|> parsesharpnote
+
+let parseoctave = anyOf "123" |>> 
+ (function
+  | '1' -> One
+  | '2' -> Two
+  | '3' -> Three
+  | unknown -> sprintf "unknown octave %c" unknown |> failwith)
+
+let parsetone = pipe2 parsenote parseoctave (fun n o -> Tone(note = n, octave = o))
+
+let parserest = stringReturn "-" Rest
+
+let parsetoken = pipe2 parselength (parserest <|> parsetone) (fun l t -> {length = l; sound = t})
+
+let parsescore = sepBy parsetoken (pstring " ")
+
+TST parsemeasurefraction "2"
+TST parsenote "#a"
+TST parseoctave "2"
+TST parsetone "#d3"
+TST parsescore aspriation
