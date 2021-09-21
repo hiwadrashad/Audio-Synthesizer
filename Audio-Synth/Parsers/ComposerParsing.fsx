@@ -1,6 +1,7 @@
-﻿#r @"C:\Users\itv-admin\.nuget\packages\fparsec\1.1.1\lib\netstandard2.0\FParsec.dll"
+﻿
+module ComposerParsing
+#r @"C:\Users\itv-admin\.nuget\packages\fparsec\1.1.1\lib\netstandard2.0\FParsec.dll"
 #r @"C:\Users\itv-admin\.nuget\packages\fparsec\1.1.1\lib\netstandard2.0\FParsecCS.dll"
-
 open FParsec
 
 let TST p str = 
@@ -8,7 +9,7 @@ let TST p str =
  |Success(result, _,  _) -> printfn "Success: %A" result
  | Failure(errorMsg, _, _) -> printfn "Failure: %s" errorMsg
 
-type MeasureFraction = Half | Quarter | Eighth | Sixteenth | ThirthySeconth
+type MeasureFraction = Full | Half | Quarter | Eighth | Sixteenth | ThirthySeconth
 type Length = {fraction: MeasureFraction; extended: bool}
 type Note = A | ASharp | B | C | CSharp | D | DSharp | E | F | FSharp | G | GSharp
 type Octave = One | Two | Three
@@ -75,3 +76,18 @@ TST parsenote "#a"
 TST parseoctave "2"
 TST parsetone "#d3"
 TST parsescore aspriation
+
+let durationFromToken token = 
+ let bpm = 120.
+ let secondsPerBeat = 60./bpm
+ (match token.length.fraction with
+ | Full -> 4.*1000.*secondsPerBeat
+ | Half -> 2.*1000.*secondsPerBeat
+ | Quarter -> 1.*1000.*secondsPerBeat
+ | Eighth -> 1./2.*1000.*secondsPerBeat
+ | Sixteenth -> 1./4.*1000.*secondsPerBeat
+ | ThirthySeconth -> (1./8.)*1000.*secondsPerBeat) *
+ (if token.length.extended then 1.5 else 1.0)
+ 
+
+ let frequency {sound=Sound}

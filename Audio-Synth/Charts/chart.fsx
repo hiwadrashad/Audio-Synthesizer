@@ -1,4 +1,5 @@
-﻿#r @"C:\Users\itv-admin\.nuget\packages\xplot.plotly\4.0.3\lib\netstandard2.0\XPlot.Plotly.dll"
+﻿module Chart
+#r @"C:\Users\itv-admin\.nuget\packages\xplot.plotly\4.0.3\lib\netstandard2.0\XPlot.Plotly.dll"
 
 open XPlot.Plotly 
 

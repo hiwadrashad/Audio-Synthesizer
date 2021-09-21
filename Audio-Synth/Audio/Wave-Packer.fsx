@@ -1,4 +1,6 @@
-﻿#load "SampleGenerator.fsx"
+﻿module WavePacker
+#load "SampleGenerator.fsx"
+open SampleGenerator
 open System.IO
 open System.Text
 

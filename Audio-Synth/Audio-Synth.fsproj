@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Include="Composer\Assembler.fsx" />
     <None Include="Parsers\ComposerParsing.fsx" />
     <None Include="Charts\chart.fsx" />
     <None Include="Audio\Wave-Packer.fsx" />
