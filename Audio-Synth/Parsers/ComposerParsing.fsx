@@ -88,6 +88,27 @@ let durationFromToken token =
  | Sixteenth -> 1./4.*1000.*secondsPerBeat
  | ThirthySeconth -> (1./8.)*1000.*secondsPerBeat) *
  (if token.length.extended then 1.5 else 1.0)
- 
 
- let frequency {sound=Sound}
+let parse (score:string) =    
+     match score.Trim() |> run parsescore with
+         | Success(result, _, _)   -> Choice2Of2 result
+         | Failure(errorMsg, _, _) -> Choice1Of2 errorMsg
+
+let octaveNumeric = function 
+ | One -> 1
+ | Two -> 2
+ | Three -> 3
+
+let semitonesBetween lower upper = 
+ let noteSquence = [A;ASharp;B;CSharp;D;DSharp;E;F;FSharp;G;GSharp]
+ let overAllIndex (note,octave) =
+  let noteIndex = List.findIndex(fun n -> n=note) noteSquence
+  noteIndex + ((octaveNumeric octave - 1) * 12)
+ (overAllIndex upper) - (overAllIndex lower)
+
+let frequency {sound=sound} = 
+ match sound with
+ | Rest -> 0.
+ | Tone (note,octave) -> 
+  let gap = semitonesBetween (A,One) (note,octave)
+  220. * ((2. ** (1./12.)) ** (float gap))
